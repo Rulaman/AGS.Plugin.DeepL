@@ -1,0 +1,55 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    Set the BuildPlatform property to the Eto platform you wish to build for.
+    The default is the platform you are building on.
+    Valid values: Wpf, Windows, Mac64, XamMac2, Gtk, Direct2D
+  -->
+
+  <PropertyGroup>
+    <TargetFramework>net48</TargetFramework>
+    <OutputType>Library</OutputType>
+    <ApplicationIcon>Resources\deepl-logo-blue-16.ico</ApplicationIcon>
+      <RestoreProjectStyle>PackageReference</RestoreProjectStyle>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="Resources\deepl-logo-blue.svg" />
+    <EmbeddedResource Include="Resources\deepl-logo-blue-16.ico" />
+    <Compile Include="Common.fs" />
+    <Compile Include="TranslationInfo.fs" />
+    <Compile Include="DestinationSelection.fs" />
+    <Compile Include="DeepL.fs" />
+    <Compile Include="AGSPanel.fs" />
+    <Compile Include="Plugin.fs" />
+    <Compile Include="PluginLoader.fs" />
+    <None Include="Info.plist" />
+    <None Include="MacIcon.icns" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Resources.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Properties\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="DeepL" Version="0.4.3" />
+    <PackageReference Include="System.Text.Encodings.Web" Version="8.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="AGS.Types">
+      <HintPath>external\AGS.Types.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Windows.Forms" />
+  </ItemGroup>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="rem echo f | xcopy ...&#xD;&#xA;xcopy &quot;$(TargetPath)&quot; &quot;C:\temp\ags 3.6.1.12 beta 13\$(TargetFileName)&quot; /Y /S&#xD;&#xA;rem xcopy &quot;$(TargetDir)Eto.dll&quot; &quot;C:\temp\ags 3.6.1.12 beta 13\Eto.dll&quot; /Y /S&#xD;&#xA;rem echo d | xcopy &quot;$(TargetDir)DeepL.net.dll&quot; &quot;C:\temp\ags 3.6.1.12 beta 13\DeepL.net.dll&quot; /Y /S&#xD;&#xA;xcopy &quot;$(TargetDir)FSharp.Core.dll&quot; &quot;C:\temp\ags 3.6.1.12 beta 13\FSharp.Core.dll&quot; /Y /S" />
+  </Target>
+</Project>
