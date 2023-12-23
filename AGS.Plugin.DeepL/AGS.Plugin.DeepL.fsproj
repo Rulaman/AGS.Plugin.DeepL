@@ -38,8 +38,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="DeepL" Version="0.4.3" />
-    <PackageReference Include="System.Text.Encodings.Web" Version="8.0.0" />
+    <PackageReference Include="DeepL.net" Version="1.8.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -50,6 +49,6 @@
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="rem echo f | xcopy ...&#xD;&#xA;xcopy &quot;$(TargetPath)&quot; &quot;C:\temp\ags 3.6.1.12 beta 13\$(TargetFileName)&quot; /Y /S&#xD;&#xA;rem xcopy &quot;$(TargetDir)Eto.dll&quot; &quot;C:\temp\ags 3.6.1.12 beta 13\Eto.dll&quot; /Y /S&#xD;&#xA;rem echo d | xcopy &quot;$(TargetDir)DeepL.net.dll&quot; &quot;C:\temp\ags 3.6.1.12 beta 13\DeepL.net.dll&quot; /Y /S&#xD;&#xA;xcopy &quot;$(TargetDir)FSharp.Core.dll&quot; &quot;C:\temp\ags 3.6.1.12 beta 13\FSharp.Core.dll&quot; /Y /S" />
+    <Exec Command="rem echo f | xcopy ...&#xD;&#xA;xcopy &quot;$(TargetPath)&quot; &quot;C:\temp\ags 3.6.1.12 beta 13\$(TargetFileName)&quot; /Y /S&#xD;&#xA;rem xcopy &quot;$(TargetDir)Eto.dll&quot; &quot;C:\temp\ags 3.6.1.12 beta 13\Eto.dll&quot; /Y /S&#xD;&#xA;echo d | xcopy &quot;$(TargetDir)DeepL.net.dll&quot; &quot;C:\temp\ags 3.6.1.12 beta 13\DeepL.net.dll&quot; /Y /S&#xD;&#xA;xcopy &quot;$(TargetDir)FSharp.Core.dll&quot; &quot;C:\temp\ags 3.6.1.12 beta 13\FSharp.Core.dll&quot; /Y /S" />
   </Target>
 </Project>

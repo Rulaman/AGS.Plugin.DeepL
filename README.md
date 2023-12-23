@@ -15,14 +15,29 @@ Any untranslated line will now be translated when you right click on the transla
 If you have not set an key, not set the source language and not set the destination language for your translation file then the command is grayed out.
 
 ## Beware
-This plugin uses an older nuget package for the access to DeepL. It will be replaced with the official one after a feww issues are clarified.
+This plugin uses the official nuget package from DeepL.
 
 
 ## Issues
-The official DeepL.net nuget package supports also netstandard and there needs a little change in the ags project to support this. On loading the plugin with the official version it gives an version mismatch error.
-The only way I found to prevent this is to add an parameter in the plugin calling project.
+After extracting the content into your editor directory you have to modify your `AGSEditor.exe.config` with the following lines
+```
+  <runtime>
+    <assemblyBinding xmlns="urn:schemas-microsoft-com:asm.v1">
+      <dependentAssembly>
+        <assemblyIdentity name="System.Text.Json" publicKeyToken="cc7b13ffcd2ddd51" culture="neutral" />
+        <bindingRedirect oldVersion="0.0.0.0-5.0.0.2" newVersion="5.0.0.2" />
+      </dependentAssembly>
+    </assemblyBinding>
+    <assemblyBinding xmlns="urn:schemas-microsoft-com:asm.v1">
+      <dependentAssembly>
+        <assemblyIdentity name="System.Runtime.CompilerServices.Unsafe" publicKeyToken="b03f5f7f11d50a3a" culture="neutral" />
+        <bindingRedirect oldVersion="0.0.0.0-5.0.0.0" newVersion="5.0.0.0" />
+      </dependentAssembly>
+    </assemblyBinding>
+  </runtime>
+```
+(The content has to be between the `<configuration> </configuration>` tags)
 
-`<RestoreProjectStyle>PackageReference</RestoreProjectStyle>`
 
 ## Hints
 This plugin will be replaced with an updated version who is able to access multiple translation services.

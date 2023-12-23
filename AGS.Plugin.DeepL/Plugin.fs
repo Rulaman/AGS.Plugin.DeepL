@@ -6,6 +6,7 @@ open AGS.Plugin.DeepLT
 open System.Collections.Generic
 open TranslationInfo
 open Common
+open System.Collections
 
 type DeepLPlugin (host: IAGSEditor) as this =
     let COMPONENT_ID = "TranslatorSettings"
@@ -30,7 +31,7 @@ type DeepLPlugin (host: IAGSEditor) as this =
     let key = if System.IO.File.Exists(keyPath) then System.IO.File.ReadAllText(keyPath) else ""
 
     let mutable translatorInstance = new DeepLTranslator(key)
-    let availableTranslations = new System.Collections.Generic.List<DeepL.SupportedLanguage>();
+    let availableTranslations = new System.Collections.Generic.List<DeepL.Model.TargetLanguage>();
 
     let _ = pane.Event1.Add(fun(key) -> this.SetKey(key))
     let _ = pane.Key <- key
@@ -63,6 +64,7 @@ type DeepLPlugin (host: IAGSEditor) as this =
                 // get the untranslated lines (with index?)
                 let headerLines = new System.Collections.Generic.List<string>()
                 let untranslated = new System.Collections.Generic.List<string>()
+                let alreadyTranslated = new System.Collections.Generic.Dictionary<string, string>()
 
                 let mutable count: int = 0
                 let max = lines.Length
@@ -75,6 +77,9 @@ type DeepLPlugin (host: IAGSEditor) as this =
                         headerLines.Add thisLine
                     if nextLine = "" then
                         untranslated.Add(thisLine)
+                        count <- count + 1
+                    else
+                        alreadyTranslated.Add(thisLine, nextLine)
                         count <- count + 1
                     if  thisLine = "" then
                         ()
@@ -93,6 +98,10 @@ type DeepLPlugin (host: IAGSEditor) as this =
 
                 // put the translations back
                 outLines.AddRange(headerLines)
+
+                for entry in alreadyTranslated do
+                    outLines.Add(entry.Key)
+                    outLines.Add(entry.Value)
 
                 if translated.Length = untranslated.Count then
                     let mutable cnt: int = 0
@@ -119,7 +128,7 @@ type DeepLPlugin (host: IAGSEditor) as this =
 
             let dict = new Dictionary<string, string>()
             for entry in availableTranslations do
-                dict.Add(entry.LanguageCode, entry.Name)
+                dict.Add(entry.Code, entry.Name)
 
             match node with
             | NotNull ->
@@ -143,7 +152,7 @@ type DeepLPlugin (host: IAGSEditor) as this =
 
                         match innerNode.InnerText with
                         | "" -> ()
-                        | NotNull -> info.LanguageCode <-  availableTranslations.Find(fun element -> element.Name = innerNode.InnerText).LanguageCode
+                        | NotNull -> info.LanguageCode <-  availableTranslations.Find(fun element -> element.Name = innerNode.InnerText).Code
                         | _ -> ()
 
 
@@ -171,7 +180,7 @@ type DeepLPlugin (host: IAGSEditor) as this =
 
             let dict = new Dictionary<string, string>()
             for entry in availableTranslations do
-                dict.Add(entry.LanguageCode, entry.Name)
+                dict.Add(entry.Code, entry.Name)
 
 
             let max =  host.CurrentGame.Translations.Count
