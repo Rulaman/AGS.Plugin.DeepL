@@ -2,11 +2,13 @@
 
 open AGS.Types
 open System.Drawing
+open System.Linq
 open AGS.Plugin.DeepLT
 open System.Collections.Generic
 open TranslationInfo
 open Common
 open System.Collections
+open System.Windows.Forms
 
 type DeepLPlugin (host: IAGSEditor) as this =
     let COMPONENT_ID = "TranslatorSettings"
@@ -50,70 +52,25 @@ type DeepLPlugin (host: IAGSEditor) as this =
             else if controlID.StartsWith MENU_PREFIX then
                 let num = int (controlID.Replace(MENU_PREFIX, ""))
                 // do here the magic for the n-th file
-                let currentTranslation = host.CurrentGame.Translations[num]
+                let selectedTranslation = host.CurrentGame.Translations[num]
 
-                // read the whole file
-                // if the internal structure gets saved, then don't read the file.
-                let gamePath = host.CurrentGame.DirectoryPath
-                let translationsFile = currentTranslation.FileName
-                let outFile = currentTranslation.FileName
-                let filePath = System.IO.Path.Combine(gamePath, translationsFile)
-                let outPath = System.IO.Path.Combine(gamePath, outFile)
-                let lines = System.IO.File.ReadAllLines filePath
+                let untranslatedEntries = selectedTranslation.TranslatedLines.Where(fun x -> x.Value = "")
+                let keysOfUntranslatedLines = untranslatedEntries.Select(fun x -> x.Key)
 
-                // get the untranslated lines (with index?)
-                let headerLines = new System.Collections.Generic.List<string>()
-                let untranslated = new System.Collections.Generic.List<string>()
-                let alreadyTranslated = new System.Collections.Generic.Dictionary<string, string>()
-
-                let mutable count: int = 0
-                let max = lines.Length
-
-                while count < max do
-                    let thisLine = if count < max then lines[count] else ""
-                    let nextLine = if count < max then lines[count + 1] else ""
-
-                    if thisLine.StartsWith "//" then
-                        headerLines.Add thisLine
-                    if nextLine = "" then
-                        untranslated.Add(thisLine)
-                        count <- count + 1
-                    else
-                        alreadyTranslated.Add(thisLine, nextLine)
-                        count <- count + 1
-                    if  thisLine = "" then
-                        ()
-                    count <- count + 1
-
-                let destLang = pane.TranslationsInfo[num].LanguageCode
-                let returnedLines = translatorInstance.Translate(untranslated, "de", destLang)  |> Async.RunSynchronously
+                let destinationLanguageCode = pane.TranslationsInfo[num].LanguageCode
+                let returnedLines = translatorInstance.Translate(keysOfUntranslatedLines, "de", destinationLanguageCode)  |> Async.RunSynchronously
                 let translated = List.ofSeq returnedLines
 
-                let outLines = new System.Collections.Generic.List<string>()
+                let keyList = keysOfUntranslatedLines.ToList()
 
-
-                // if the internal translations could be saved on save game
-                //currentTranslation.TranslatedLines["MMM37"] <- ret.Text
-                //currentTranslation.Modified <- true
-
-                // put the translations back
-                outLines.AddRange(headerLines)
-
-                for entry in alreadyTranslated do
-                    outLines.Add(entry.Key)
-                    outLines.Add(entry.Value)
-
-                if translated.Length = untranslated.Count then
-                    let mutable cnt: int = 0
-
-                    while cnt < translated.Length do
-                        outLines.Add(untranslated[cnt])
-                        outLines.Add(translated[cnt].Text)
-                        cnt <- cnt + 1
-
-
-                if translated.Length = untranslated.Count then
-                    System.IO.File.WriteAllLines(outPath, outLines)
+                if translated.Length = untranslatedEntries.Count() then
+                    for i in 0..translated.Length - 1 do
+                        selectedTranslation.TranslatedLines[keyList[i]] <- translated[i].Text
+                    selectedTranslation.SaveData()
+                    ()
+                else
+                    MessageBox.Show "Error while translating!"  |> ignore
+                ()
             ()
 
         member this.ComponentID: string = COMPONENT_ID
