@@ -7,12 +7,11 @@ open AGS.Plugin.DeepLT
 open System.Collections.Generic
 open TranslationInfo
 open Common
-open System.Collections
 open System.Windows.Forms
 
 type DeepLPlugin (host: IAGSEditor) as this =
-    let COMPONENT_ID = "TranslatorSettings"
-    let COMPONENT_MENU_COMMAND = "DeepL-MenuCommand"
+    let COMPONENT_ID = "DeepLTranslatorSettings"
+    //let COMPONENT_MENU_COMMAND = "DeepL-MenuCommand"
     let CONTROL_ID_ROOT_NODE = "DeepL-Root"
     let ICON_KEY = "DeepL-Icon"
     let MENU_PREFIX = "DeepL-" // DeepL^!^
@@ -145,11 +144,13 @@ type DeepLPlugin (host: IAGSEditor) as this =
             let mutable found = false
 
             for translation in host.CurrentGame.Translations do
-                let mutable info = pane.TranslationsInfo.Find(fun (element) -> element.LanguageName = translation.Name)
+                let mutable info = pane.TranslationsInfo.Find(fun (element) -> element.Name = translation.Name)
 
                 match info with
                 | NotNull -> found <- true
-                | _ -> info <- new TranslationInfo()
+                | _ ->
+                    info <- new TranslationInfo()
+                    found <- false
 
                 info.Id <- "Trl" + count.ToString()
                 info.Name <- translation.Name
