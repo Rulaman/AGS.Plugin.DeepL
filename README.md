@@ -14,6 +14,15 @@ If you have not set an key, not set the source language and not set the destinat
 
 ---
 
+## Warning
+
+Please be aware that this plugin is by no means a replacement for a human translation, but it will be a good starting point.
+If you do not want to use a human translator you should make it clear, that this translation is done automatically and not by a native speaker.
+
+Be careful.
+
+---
+
 ## Hint
 This plugin uses the official nuget package from DeepL.
 
